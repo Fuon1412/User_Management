@@ -17,7 +17,7 @@ var key = Encoding.ASCII.GetBytes(jwtKey);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DatabaseContext>(options => 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddIdentity<Account, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<IAccountService, AccountServices>();
@@ -69,7 +69,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
-app.UseAuthentication(); // Move this before Authorization
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers();
