@@ -1,21 +1,24 @@
-using back_end.Models;
 using Microsoft.EntityFrameworkCore;
-using back_end.Models.User;
+using back_end.Models.Client;
+using back_end.Models.Project;
+
 
 namespace back_end.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext(DbContextOptions dbContextOptions) : DbContext(dbContextOptions)
     {
-        public DatabaseContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
-        {
-
-        }
-
-        public DbSet<Account> Accounts { get; set; }
+        //Thiet lap cac bang trong database
+        //Bang User
+        public required DbSet<User> Accounts { get; set; }
+        public required DbSet<UserInfor> UserInfors { get; set; }
+        //Bang Project
+        public required DbSet<Project> Projects { get; set; }
+        public required DbSet<Stage> Stages  { get; set; }
+        public required DbSet<Models.Project.Task> Tasks { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Account>(entity =>
+            builder.Entity<User>(entity =>
             {
                 entity.Ignore(e => e.PhoneNumber);
                 entity.Ignore(e => e.PhoneNumberConfirmed);

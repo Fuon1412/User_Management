@@ -1,8 +1,9 @@
 using Microsoft.IdentityModel.Tokens;
-using back_end.Models.User;
+using back_end.Models.Client;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security;
 
 namespace back_end.Utils
 {
@@ -17,7 +18,7 @@ namespace back_end.Utils
             _issuer = issuer;
         }
         // Generate JWT Token khi user dang nhap hoac dang ky 1 account moi
-        public string GenerateJwtToken(Account account)
+        public string GenerateJwtToken(User account)
         {
             if (string.IsNullOrEmpty(_jwtKey))
             {
@@ -44,6 +45,48 @@ namespace back_end.Utils
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        //Kiem tra token co hop le hay khong
+        public ClaimsPrincipal ValidateJwtToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_jwtKey);
+
+            try
+            {
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+
+                    ValidateIssuer = true,
+                    ValidIssuer = _issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = _issuer,
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+                var claimPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+                if (validatedToken is JwtSecurityToken jwtSecurityToken &&
+                        jwtSecurityToken.Header.Alg.Equals(
+                            SecurityAlgorithms.HmacSha256,
+                            StringComparison.InvariantCultureIgnoreCase
+                        )
+                    )
+                {
+                    return claimPrincipal;
+
+                }
+
+                else throw new SecurityException("Token is not valid");
+            }
+            catch (Exception e)
+            {
+                throw new SecurityException($"Error while validating token: {e.Message}");
+            }
         }
     }
 }
