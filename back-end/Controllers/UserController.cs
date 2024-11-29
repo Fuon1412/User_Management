@@ -56,7 +56,8 @@ namespace back_end.Controllers
                 Id = Guid.NewGuid().ToString(),
                 AccountId = userId,
                 Account = newAccount,
-                FullName = "New User"
+                FullName = registerDTO.FullName,
+                Bussiness = registerDTO.Bussiness,
             };
             newAccount.UserInfor = userInfor;
             await _accountService.RegisterAsync(newAccount, registerDTO.Password);

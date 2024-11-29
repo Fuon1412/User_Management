@@ -10,6 +10,7 @@ namespace back_end.Models.Client
         public required string AccountId { get; set; }
         [ForeignKey("AccountId")]
         public required User Account { get; set; }
+        public required string Bussiness { get; set; } = string.Empty;
         public string? FullName { get; set; } = string.Empty;
         public DateTime? DoB { get; set; }
         public string? PhoneNumber { get; set; }
